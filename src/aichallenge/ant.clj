@@ -16,12 +16,6 @@
                  :food #{}
                  :hill #{}})
 
-(def init-map [])
-
-(defn get-value [m k])
-(defn set-value [m k v])
-
-
 (def dir-sym {:north "N"
               :south "S"
               :east "E"
@@ -156,10 +150,10 @@
 
 (defn apply-move
   "Get projected game state after move"
-  [gs [[row col] dir]]
+  [gs [[row col :as ant] dir]]
   (update-in gs [:ants]
              #(-> (dissoc % [row col])
-                  (assoc % [row col]))))
+                  (assoc % (move-ant ant dir)))))
 
 (defn unit-distance 
   "Get the vector distance between two points on a torus. Negative deltas are 
@@ -231,11 +225,12 @@ and dir is [:north :south :east :west]"
   [init-bot]
   (when (message? :turn (read-line))
     (binding [*game-info* (build-game-info)]
-      (let [bot (init-bot *game-info*)]
+      (let [{bot :bot
+             initial-knowledge :initial-knowledge} (init-bot *game-info*)]
         (println "go") ;; we're "setup" so let's start
         (loop [cur (read-line)
                state {}
-               bot-knowledge nil]
+               bot-knowledge initial-knowledge]
           (cond
            (message? :end cur) (collect-stats)
            (message? :go cur) (let [{moves :moves
