@@ -1,6 +1,5 @@
 (ns aichallenge.bot
-  (:require [clojure.core.logic :as logic]
-            [aichallenge.ant :as ant]))
+  (:require [aichallenge.ant :as ant]))
 
 (defn perr [& strs]
   (doseq [s (interpose \space strs)]
