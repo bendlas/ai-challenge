@@ -101,7 +101,7 @@
              (= [r c] cur))
           ants))
 
-(defn- move-ant 
+(defn move-ant 
   "Return the location defined by moving the given ant in the given
   direction."
   [ant dir]
