@@ -13,7 +13,7 @@
   (perrln "Initlializing bot")
   (fn pull-moves [state]
     (for [ant (:ants state)
-          :let [dir (first (filter #(ant/valid-move? ant %)
+          :let [dir (first (filter #(ant/valid-move? state ant %)
                                    [:north :east :west :south]))]
           :when dir]
       [ant dir])))

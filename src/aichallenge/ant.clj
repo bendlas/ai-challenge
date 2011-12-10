@@ -7,7 +7,6 @@
 ;;****************************************************************
 
 (declare ^{:dynamic true} *game-info*)
-(declare ^{:dynamic true} *game-state*)
 
 (def init-state {:turn 0
                  :water #{}
@@ -59,7 +58,6 @@
 
 (defn- message? [msg-type msg]
   (re-seq (messages msg-type) (string/lower-case msg)))
-
 
 (defn- build-game-info []
   (loop [cur (read-line)
@@ -130,31 +128,25 @@
   [k]
   (*game-info* k))
 
-(defn move 
-  "Issue a move command for the given ant, where the ant is [row col] and dir
-  is [:north :south :east :west]"
-  [[row col :as ant] dir]
-  (println "o" row col (dir-sym dir)))
-
 (defn turn-num
   "Get the turn number"
-  []
-  (:turn *game-state*))
+  [gs]
+  (:turn gs))
 
 (defn my-ants 
   "Get a set of all ants belonging to you"
-  []
-  (:ants *game-state*))
+  [gs]
+  (:ants gs))
 
 (defn enemy-ants 
   "Get a set of all enemy ants where an enemy ant is [row col player-num]"
-  []
-  (:enemies *game-state*))
+  [gs]
+  (:enemies gs))
 
 (defn food 
   "Get a set of food locations"
-  []
-  (:food *game-state*))
+  [gs]
+  (:food gs))
 
 
 (defn unit-distance 
@@ -180,24 +172,24 @@
 
 (defn unoccupied? 
   "If the given location does not contain an ant or food, return loc"
-  [loc]
-  (when (and (not (contains-ant? (food) loc)) 
-             (not (contains-ant? (my-ants) loc))
-             (not (contains-ant? (enemy-ants) loc)))
+  [gs loc]
+  (when (and (not (contains-ant? (food gs) loc)) 
+             (not (contains-ant? (my-ants gs) loc))
+             (not (contains-ant? (enemy-ants gs) loc)))
     loc))
 
 (defn passable? 
   "Deteremine if the given location can be moved to. If so, loc is returned."
-  [loc]
-  (when (and (not (contains? (*game-state* :water) loc))
-             (unoccupied? loc))
+  [gs loc]
+  (when (and (not (contains? (gs :water) loc))
+             (unoccupied? gs loc))
     loc))
 
 (defn valid-move? 
   "Check if moving an ant in the given direction is passable. If so,
   return the location that the ant would then be in."
-  [ant dir]
-  (passable? (move-ant ant dir)))
+  [gs ant dir]
+  (passable? gs (move-ant ant dir)))
 
 
 (defn direction [loc loc2]
@@ -215,9 +207,12 @@
             [(offset-dir [row 0])
              (offset-dir [0 col])])))
 
-(defn emit! [moves]
-  (doseq [[ant dir] moves]
-    (move ant dir)))
+(defn emit!
+  "Emit a list of moves where each move is [ant dir], where each ant is [row col]
+and dir is [:north :south :east :west]"
+  [moves]
+  (doseq [[[row col :as ant] dir] moves]
+    (println "o" row col (dir-sym dir))))
 
 (defn start-game 
   "Play the game with the given bot."
@@ -231,9 +226,9 @@
          (if (message? :end cur)
            (collect-stats)
            (do
-             (when (message? :go cur) 
-               (binding [*game-state* state]
-                 (emit! (bot state))
-                 (println "go")))
-             (recur (read-line) (update-state state cur)))))))))
+             (when (message? :go cur)
+               (emit! (bot state))
+               (println "go"))
+             (recur (read-line)
+                    (update-state state cur)))))))))
 
