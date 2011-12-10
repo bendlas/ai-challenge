@@ -148,6 +148,12 @@
   [gs]
   (:food gs))
 
+(defn apply-move
+  "Get projected game state after move"
+  [gs [[row col :as ant] dir]]
+  (update-in gs [:ants]
+             #(-> (dissoc % [row col])
+                  (assoc % [row col]))))
 
 (defn unit-distance 
   "Get the vector distance between two points on a torus. Negative deltas are 
