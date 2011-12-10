@@ -10,9 +10,10 @@
   (perr \newline))
 
 (defn init-bot [game-info]
-  (fn pull-moves [state]
-    (for [ant (:ants state)
-          :let [dir (first (filter #(ant/valid-move? state ant %)
-                                   [:north :east :west :south]))]
-          :when dir]
-      [ant dir])))
+  (fn pull-moves [{:keys [state knowledge]}]
+    {:moves (for [ant (:ants state)
+                  :let [dir (first (filter #(ant/valid-move? state ant %)
+                                           [:north :east :west :south]))]
+                  :when dir]
+              [ant dir])
+     :knowledge knowledge}))

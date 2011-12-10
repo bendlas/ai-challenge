@@ -16,6 +16,12 @@
                  :food #{}
                  :hill #{}})
 
+(def init-map [])
+
+(defn get-value [m k])
+(defn set-value [m k v])
+
+
 (def dir-sym {:north "N"
               :south "S"
               :east "E"
@@ -150,7 +156,7 @@
 
 (defn apply-move
   "Get projected game state after move"
-  [gs [[row col :as ant] dir]]
+  [gs [[row col] dir]]
   (update-in gs [:ants]
              #(-> (dissoc % [row col])
                   (assoc % [row col]))))
@@ -226,15 +232,21 @@ and dir is [:north :south :east :west]"
   (when (message? :turn (read-line))
     (binding [*game-info* (build-game-info)]
       (let [bot (init-bot *game-info*)]
-       (println "go") ;; we're "setup" so let's start
-       (loop [cur (read-line)
-              state {}]
-         (if (message? :end cur)
-           (collect-stats)
-           (do
-             (when (message? :go cur)
-               (emit! (bot state))
-               (println "go"))
-             (recur (read-line)
-                    (update-state state cur)))))))))
+        (println "go") ;; we're "setup" so let's start
+        (loop [cur (read-line)
+               state {}
+               bot-knowledge nil]
+          (cond
+           (message? :end cur) (collect-stats)
+           (message? :go cur) (let [{moves :moves
+                                     new-knowledge :knowledge} (bot {:state state
+                                                                 :knowledge bot-knowledge})]
+                                (emit! moves)
+                                (println "go")
+                                (recur (read-line)
+                                       state
+                                       new-knowledge))
+           :else (recur (read-line)
+                        (update-state state cur)
+                        bot-knowledge)))))))
 
