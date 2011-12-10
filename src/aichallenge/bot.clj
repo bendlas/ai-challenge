@@ -10,7 +10,6 @@
   (perr \newline))
 
 (defn init-bot [game-info]
-  (perrln "Initlializing bot")
   (fn pull-moves [state]
     (for [ant (:ants state)
           :let [dir (first (filter #(ant/valid-move? state ant %)
