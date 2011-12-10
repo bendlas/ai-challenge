@@ -215,19 +215,25 @@
             [(offset-dir [row 0])
              (offset-dir [0 col])])))
 
+(defn emit! [moves]
+  (doseq [[ant dir] moves]
+    (move ant dir)))
+
 (defn start-game 
   "Play the game with the given bot."
-  [bot]
+  [init-bot]
   (when (message? :turn (read-line))
     (binding [*game-info* (build-game-info)]
-      (println "go") ;; we're "setup" so let's start
-      (loop [cur (read-line)
-             state {}]
-        (if (message? :end cur) 
-          (collect-stats)
-          (do
-            (when (message? :go cur) 
-              (binding [*game-state* state]
-                (bot) (println "go")))
-            (recur (read-line) (update-state state cur))))))))
+      (let [bot (init-bot *game-info*)]
+       (println "go") ;; we're "setup" so let's start
+       (loop [cur (read-line)
+              state {}]
+         (if (message? :end cur)
+           (collect-stats)
+           (do
+             (when (message? :go cur) 
+               (binding [*game-state* state]
+                 (emit! (bot state))
+                 (println "go")))
+             (recur (read-line) (update-state state cur)))))))))
 
