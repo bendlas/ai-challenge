@@ -21,3 +21,7 @@
             \space))
     (u/perr \newline))
   (u/perr \newline))
+
+(defn clone-matrix
+  [template-matrix fill-value]
+  (into [] (map (constantly fill-value) template-matrix)))

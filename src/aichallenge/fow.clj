@@ -29,7 +29,7 @@
                             :as matrix}
                            positions]
   (let [visible-fields (populate-visibility
-                        (into [] (map (constantly false) data)) ; clone data array with false
+                        (m/clone-matrix data false)
                         mad positions)]
     (assoc matrix
       :data (into [] (map (fn [field visible]
