@@ -23,14 +23,10 @@
 
 (defn init-bot [{:keys [rows cols viewradius2]}]
   (let [visible-positions (fow/visibility-pattern viewradius2 rows cols)]
-    {:initial-knowledge (-> {:mad #(+ %2 (* %1 cols))
-                             :cols cols
-                             :rows rows
-                             :data (m/matrix-of rows cols 0)}
+    {:initial-knowledge (-> {:data (m/matrix-of rows cols 0)}
                             (s/init-strategy))
      :bot (fn pull-moves [knowledge]
-            ;(m/pr-matrix knowledge #(if (zero? %) \# \space))
-            (u/perrln "test")
+            ;(m/pr-matrix (:cost-map (:strategy-data knowledge)) #(if (zero? %) \# \space))
             {:knowledge (fow/update-visibilities knowledge (mapcat visible-positions
                                                                    (ant/my-ants (:state knowledge))))
              :moves (-> (moves-for-step knowledge)

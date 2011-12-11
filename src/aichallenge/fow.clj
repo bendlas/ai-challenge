@@ -20,21 +20,13 @@
         [(u/wrap (+ r pr) max-r)
          (u/wrap (+ c pc) max-c)]))))
 
-(defn- populate-visibility [data mad positions]
-  (reduce (fn [data [r c]]
-            (assoc data (mad r c) true))
-          data positions))
+(defn- populate-visibility [m positions]
+  (for [p positions]
+    (m/assoc-matrix m (first p) (last p) true)))
 
-(defn update-visibilities [{:keys [mad data]
-                            :as matrix}
-                           positions]
+(defn update-visibilities
+  [matrix positions]
   (let [visible-fields (populate-visibility
-                        (m/clone-matrix data false)
-                        mad positions)]
-    (assoc matrix
-      :data (into [] (map (fn [field visible]
-                            (if visible
-                              0
-                              (inc field)))
-                          data visible-fields)))))
-
+                        (m/clone-matrix matrix false)
+                        positions)]
+   (m/map-matrix! matrix visible-fields #(if %2 0 (inc %1)))))
