@@ -1,6 +1,5 @@
 (ns aichallenge.collisions
-  (:use [clojure.pprint :only (pprint)]
-        [clojure.set :only (difference)])
+  (:use [clojure.set :only (difference)])
   (:require [aichallenge.ant :as ant]))
 
 (defn init-matrix [x y]
@@ -8,18 +7,13 @@
     (vec (repeatedly y row))))
 
 (defn collisions [moves]
-  (loop [m {}
-         ms moves]
-    (if (seq ms)
-      (recur (let [move (first ms)
-                   next-loc (apply ant/move-ant move)]
-               (if (m next-loc)
-                 (update-in m [next-loc] conj move)
-                 (assoc m next-loc [move])))
-             (next ms))
-      m)))
-
-(def directions #{:north :south :east :west})
+  (reduce (fn [accum move]
+            (let [next-loc (apply ant/move-ant move)]
+              (if (accum next-loc)
+                (update-in accum [next-loc] conj move)
+                (assoc accum next-loc [move]))))
+          {}
+          moves))
 
 (defn find-alternative [m ant dirs]
   (let [poss (map (fn [ant dir]
@@ -35,6 +29,14 @@
         :when (> (count moves) 1)
         [ant dir] moves]
     (find-alternative collisions ant (difference directions #{dir}))))
+        
+(let [directions #{:north :south :east :west}]
+  (defn all-alternatives [collisions]
+    (for [collision collisions
+          :let  [moves (val collision)]
+          :when (> (count moves) 1)
+          [ant dir] moves]
+      (find-alternative collisions ant (difference directions #{dir})))))
 
 (defn fix-collisions [matrix moves]
     (let [cs   (collisions moves)
