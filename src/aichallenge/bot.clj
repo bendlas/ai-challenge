@@ -4,33 +4,36 @@
                 [matrix :as m]
                 [fow :as fow]
                 [collisions :as cs]
-                [strategy :as s])))
+                [strategy :as s]
+                [util :as u])))
 
 (defn dir-for-ant
-  [ant state knowledge]
-  (first (filter #(ant/valid-move? state ant %)
+  [ant knowledge]
+  (first (filter #(ant/valid-move? (:state knowledge) ant %)
                  (shuffle [:north :east :west :south]))))
 
 (defn moves-for-step
-  "Based on current state and accumulated knoledge, come up with moves for next step"
-  [state knowledge]
-  (let [new-knowledge (s/update-strategy state knowledge)]
-    (for [ant (:ants state)
-          :let [dir (dir-for-ant ant state new-knowledge)]
+  "Based on current knowledge, return next move for every ant"
+  [knowledge]
+  (let [new-knowledge (s/update-strategy knowledge)]
+    (for [ant (:ants (:state knowledge))
+          :let [dir (dir-for-ant ant new-knowledge)]
           :when dir]
       [ant dir])))
 
 (defn init-bot [{:keys [rows cols viewradius2]}]
   (let [visible-positions (fow/visibility-pattern viewradius2 rows cols)]
-    {:initial-knowledge {:mad #(+ %2 (* %1 cols))
-                         :cols cols
-                         :rows rows
-                         :data (m/matrix-of rows cols 0)}
-     :bot (fn pull-moves [{:keys [state knowledge]}]
+    {:initial-knowledge (-> {:mad #(+ %2 (* %1 cols))
+                             :cols cols
+                             :rows rows
+                             :data (m/matrix-of rows cols 0)}
+                            (s/init-strategy))
+     :bot (fn pull-moves [knowledge]
             ;(m/pr-matrix knowledge #(if (zero? %) \# \space))
+            (u/perrln "test")
             {:knowledge (fow/update-visibilities knowledge (mapcat visible-positions
-                                                                   (ant/my-ants state)))
-             :moves (-> (moves-for-step state knowledge)
+                                                                   (ant/my-ants (:state knowledge))))
+             :moves (-> (moves-for-step knowledge)
                         cs/fix-collisions)})}))
 
 
