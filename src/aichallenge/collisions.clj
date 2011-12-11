@@ -2,10 +2,6 @@
   (:use [clojure.set :only (difference)])
   (:require [aichallenge.ant :as ant]))
 
-(defn init-matrix [x y]
-  (letfn [(row [] (vec (take x (repeat 0))))]
-    (vec (repeatedly y row))))
-
 (defn collisions [moves]
   (reduce (fn [accum move]
             (let [next-loc (apply ant/move-ant move)]
