@@ -2,7 +2,8 @@
   (:require
    (aichallenge [ant :as ant]
                 [matrix :as m]
-                [fow :as fow])))
+                [fow :as fow]
+                [collisions :as cs])))
 
 (defn init-bot [{:keys [rows cols viewradius2]}]
   (let [visible-positions (fow/visibility-pattern viewradius2 rows cols)]
@@ -14,8 +15,11 @@
             (m/pr-matrix knowledge #(if (zero? %) \# \space))
             {:knowledge (fow/update-visibilities knowledge (mapcat visible-positions
                                                                    (ant/my-ants state)))
-             :moves (for [ant (:ants state)
-                          :let [dir (first (filter #(ant/valid-move? state ant %)
-                                                   [:north :east :west :south]))]
-                          :when dir]
-                      [ant dir])})}))
+             :moves (->> (for [ant (:ants state)
+                               :let [dir (first (filter #(ant/valid-move? state ant %)
+                                                        [:north :east :west :south]))]
+                               :when dir]
+                           [ant dir])
+                         (cs/fix-collisions {}))})}))
+
+
