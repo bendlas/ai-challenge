@@ -12,6 +12,7 @@
                          :data (m/matrix-of rows cols 0)}
      :bot (fn pull-moves [{:keys [state knowledge]}]
             (m/pr-matrix knowledge #(if (zero? %) \# \space))
+            (.flush *err*)
             {:knowledge (fow/update-visibilities knowledge (mapcat visible-positions
                                                                    (ant/my-ants state)))
              :moves (for [ant (:ants state)
