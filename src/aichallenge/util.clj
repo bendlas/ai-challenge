@@ -18,3 +18,6 @@
   (apply perr strs)
   (perr \newline))
 
+(defn fpprint [filename data]
+  (spit (java.io.File. filename)
+        (with-out-str (pprint data))))

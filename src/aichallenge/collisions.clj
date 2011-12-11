@@ -3,10 +3,6 @@
         [clojure.set :only (difference)])
   (:require [aichallenge.ant :as ant]))
 
-(defn fpprint [filename data]
-  (spit (java.io.File. filename)
-        (with-out-str (pprint data))))
-
 (defn init-matrix [x y]
   (letfn [(row [] (vec (take x (repeat 0))))]
     (vec (repeatedly y row))))
@@ -32,7 +28,6 @@
                   dirs)]
     (first (remove (fn [[_ _ next-move]] (m next-move))
                        poss))))
-        
 
 (defn all-alternatives [collisions]
   (for [collision collisions

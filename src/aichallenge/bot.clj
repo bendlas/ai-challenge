@@ -21,5 +21,3 @@
                                :when dir]
                            [ant dir])
                          (cs/fix-collisions {}))})}))
-
-
