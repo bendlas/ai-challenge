@@ -1,4 +1,5 @@
-(ns aichallenge.util)
+(ns aichallenge.util
+  (:use [clojure.pprint :only (pprint)]))
 
 (defn wrap
   ([val upper] (wrap val 0 upper))
