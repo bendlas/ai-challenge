@@ -5,6 +5,15 @@
                 [fow :as fow]
                 [collisions :as cs])))
 
+(defn moves-for-step
+  "Based on current state and accumulated knoledge, come up with moves for next step"
+  [state knowledge]
+  (for [ant (:ants state)
+        :let [dir (first (filter #(ant/valid-move? state ant %)
+                                 (shuffle [:north :east :west :south])))]
+        :when dir]
+    [ant dir]))
+
 (defn init-bot [{:keys [rows cols viewradius2]}]
   (let [visible-positions (fow/visibility-pattern viewradius2 rows cols)]
     {:initial-knowledge {:mad #(+ %2 (* %1 cols))
@@ -12,14 +21,10 @@
                          :rows rows
                          :data (m/matrix-of rows cols 0)}
      :bot (fn pull-moves [{:keys [state knowledge]}]
-            (m/pr-matrix knowledge #(if (zero? %) \# \space))
+            ;(m/pr-matrix knowledge #(if (zero? %) \# \space))
             {:knowledge (fow/update-visibilities knowledge (mapcat visible-positions
                                                                    (ant/my-ants state)))
-             :moves (-> (for [ant (:ants state)
-                              :let [dir (first (filter #(ant/valid-move? state ant %)
-                                                       (shuffle [:north :east :west :south])))]
-                              :when dir]
-                          [ant dir])
+             :moves (-> (moves-for-step state knowledge)
                         cs/fix-collisions)})}))
 
 

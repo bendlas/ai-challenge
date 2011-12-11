@@ -8,9 +8,9 @@ tools/playgame.py \
   --verbose \
   --log_dir tools/game_logs \
   --turns 30 \
-  --map_file tools/submission_test/test.map \
+  --map_file tools/maps/random_walk/random_walk_02p_02.map \
   "java -cp `lein classpath` clojure.main @MyBot.clj" \
-  "python tools/submission_test/TestBot.py" \
+  "java -cp `lein classpath` clojure.main @MyBot.clj" \
   -e \
   --strict \
   --capture_errors \
