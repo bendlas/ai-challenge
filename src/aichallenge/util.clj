@@ -1,4 +1,5 @@
-(ns aichallenge.util)
+(ns aichallenge.util
+  (:use [clojure.pprint :only (pprint)]))
 
 (defn wrap
   ([val upper] (wrap val 0 upper))
@@ -18,3 +19,6 @@
   (apply perr strs)
   (perr \newline))
 
+(defn fpprint [filename data]
+  (spit (java.io.File. filename)
+        (with-out-str (pprint data))))
