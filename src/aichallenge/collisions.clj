@@ -11,31 +11,28 @@
           {}
           moves))
 
-(defn- find-alternative [m ant dirs]
-  (let [poss (map (fn [ant dir]
-                    [ant dir (ant/move-ant ant dir)])
-                  (repeat ant)
-                  dirs)]
-    (first (remove (fn [[_ _ next-move]] (m next-move))
-                       poss))))
-
 (let [directions #{:north :south :east :west}]
-  (defn- all-alternatives [collisions]
-    (for [collision collisions
-          :let  [moves (val collision)]
-          :when (> (count moves) 1)
-          [ant dir] moves]
-      (find-alternative collisions ant (difference directions #{dir})))))
+  (defn- alternatives
+    ([collisions]
+     (for [collision collisions
+           :let  [moves (val collision)]
+           :when (> (count moves) 1)
+           [ant dir] moves]
+       (first (alternatives collisions ant dir))))
+    ([collisions ant dir]
+     (for [other-dir (difference directions #{dir})
+           :let  [next-loc (ant/move-ant ant other-dir)]
+           :when (not (collisions next-loc))]
+       [ant other-dir]))))
 
-(defn fix-collisions [matrix moves]
-    (let [cs   (collisions moves)
-          alts (reduce (fn [m [ant dir _]]
-                         (assoc m ant dir)) {}
-                       (all-alternatives cs))]
-      (for [[ant dir] moves]
-        [ant (if-let [new-dir (alts ant)]
-               new-dir
-               dir)])))            
+(defn fix-collisions [moves]
+  (let [alts (reduce (fn [accum [ant dir]]
+                       (assoc accum ant dir))
+                     {}
+                     (-> moves collisions alternatives))]
+    (for [[ant dir] moves
+          :let [dir (or (alts ant) dir)]]
+          [ant dir])))         
 
 #_(zipmap (map first moves)
           (map second moves))

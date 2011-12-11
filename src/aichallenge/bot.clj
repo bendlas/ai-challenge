@@ -15,9 +15,11 @@
             (m/pr-matrix knowledge #(if (zero? %) \# \space))
             {:knowledge (fow/update-visibilities knowledge (mapcat visible-positions
                                                                    (ant/my-ants state)))
-             :moves (->> (for [ant (:ants state)
-                               :let [dir (first (filter #(ant/valid-move? state ant %)
-                                                        [:north :east :west :south]))]
-                               :when dir]
-                           [ant dir])
-                         (cs/fix-collisions {}))})}))
+             :moves (-> (for [ant (:ants state)
+                              :let [dir (first (filter #(ant/valid-move? state ant %)
+                                                       [:north :east :west :south]))]
+                              :when dir]
+                          [ant dir])
+                        cs/fix-collisions)})}))
+
+
