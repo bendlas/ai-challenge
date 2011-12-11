@@ -19,13 +19,6 @@
     (first (remove (fn [[_ _ next-move]] (m next-move))
                        poss))))
 
-(defn- all-alternatives [collisions]
-  (for [collision collisions
-        :let  [moves (val collision)]
-        :when (> (count moves) 1)
-        [ant dir] moves]
-    (find-alternative collisions ant (difference directions #{dir}))))
-        
 (let [directions #{:north :south :east :west}]
   (defn- all-alternatives [collisions]
     (for [collision collisions
