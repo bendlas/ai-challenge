@@ -17,7 +17,7 @@
                                                                    (ant/my-ants state)))
              :moves (-> (for [ant (:ants state)
                               :let [dir (first (filter #(ant/valid-move? state ant %)
-                                                       [:north :east :west :south]))]
+                                                       (shuffle [:north :east :west :south])))]
                               :when dir]
                           [ant dir])
                         cs/fix-collisions)})}))
