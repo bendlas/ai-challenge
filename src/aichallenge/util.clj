@@ -10,7 +10,6 @@
        (< upper val) (recur (- val l) lower upper)
        :else val))))
 
-
 (defn perr [& strs]
   (doseq [s (interpose \space strs)]
     (.print *err* s)))
