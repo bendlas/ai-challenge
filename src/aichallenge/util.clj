@@ -16,7 +16,7 @@
 
 (defn perrln [& strs]
   (apply perr strs)
-  (perr \newline))
+  (.println *err*))
 
 (defn fpprint [filename data]
   (spit (java.io.File. filename)
