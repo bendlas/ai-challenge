@@ -2,13 +2,12 @@
   (:use [clojure.pprint :only (pprint)]))
 
 (defn wrap
-  ([val upper] (wrap val 0 upper))
+  ([val upper]
+     (mod val (inc upper)))
   ([val lower upper]
-     (let [l (inc (- upper lower))]
-      (cond
-       (< val lower) (recur (+ val l) lower upper)
-       (< upper val) (recur (- val l) lower upper)
-       :else val))))
+     (+ lower
+        (wrap (- val lower)
+              (- upper lower)))))
 
 (defn perr [& strs]
   (doseq [s (interpose \space strs)]
