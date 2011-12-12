@@ -14,9 +14,12 @@
   (doseq [s (interpose \space strs)]
     (.print *err* s)))
 
-(defn perrln [& strs]
-  (apply perr strs)
-  (.println *err*))
+(defn perrln
+  ([]
+     (.println *err*))
+  ([& strs]
+      (apply perr strs)
+      (.println *err*)))
 
 (defn fpprint [filename data]
   (spit (java.io.File. filename)

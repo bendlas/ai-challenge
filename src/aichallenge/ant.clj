@@ -14,7 +14,8 @@
                  :enemies #{}
                  :ants #{}
                  :food #{}
-                 :hill #{}})
+                 :my-hills #{}
+                 :enemy-hills #{}})
 
 (def dir-sym {:north "N"
               :south "S"
@@ -73,15 +74,18 @@
 
 (defn- update-tile [state {:keys [tile row col player]}]
   (let [loc [row col]
-        ant (conj loc player)]
+        ant (conj loc player)
+        me? (fn [x] (zero? x))]
         (condp = tile
           :water (update-in state [:water] conj loc)
           :dead-ant (update-in state [:dead] conj ant)
-          :ant (if (zero? player)
+          :ant (if (me? player)
                  (update-in state [:ants] conj loc) 
                  (update-in state [:enemies] conj ant))
           :food (update-in state [:food] conj loc)
-          :hill (update-in state [:hill] conj loc))))
+          :hill (if (me? player)
+                  (update-in state [:my-hills] conj loc)
+                  (update-in state [:enemy-hills] conj loc)))))
 
 (defn- update-state [state msg]
   (cond

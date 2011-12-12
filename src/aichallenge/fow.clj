@@ -21,12 +21,21 @@
          (u/wrap (+ c pc) max-c)]))))
 
 (defn- populate-visibility [m positions]
-  (for [p positions]
-    (m/assoc-matrix m (first p) (last p) true)))
+  (loop
+      [cur (first positions)
+       p (rest positions)
+       result m]
+    (if (nil? cur)
+      result
+      (recur (first p)
+             (rest p)
+             (m/assoc-matrix result (first cur) (last cur) true)))))
 
 (defn update-visibilities
-  [matrix positions]
-  (let [visible-fields (populate-visibility
+  [knowledge positions]
+  (let [matrix (:visual-memory knowledge)
+        visible-fields (populate-visibility
                         (m/clone-matrix matrix false)
                         positions)]
-   (m/map-matrix! matrix visible-fields #(if %2 0 (inc %1)))))
+    (m/map-matrix! matrix visible-fields #(if %2 0 (inc %1))))
+  knowledge)

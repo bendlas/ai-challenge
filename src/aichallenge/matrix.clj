@@ -26,24 +26,32 @@
   [m]
   (:data m))
 
-(defn pr-matrix [{:keys [mad cols rows data] :as matrix} pr-val]
-  (doseq [r (range rows)]
-    (doseq [c (range cols)]
-      (u/perr (pr-val (get-matrix matrix r c))
-            \space))
-    (u/perr \newline))
-  (u/perr \newline))
+(defn pr-matrix [matrix pr-val]
+  (doseq [r (range (:rows matrix))]
+    (doseq [c (range (:cols matrix))]
+      (u/perr (pr-val (get-matrix matrix r c)) \space))
+    (u/perrln))
+  (u/perrln))
 
 (defn clone-matrix
-  [original-matrix fill-value]
-  (let [mad (:mad original-matrix)
-        cols (:cols original-matrix)
-        rows (:rows original-matrix)
-        data (:data original-matrix)]
-    {:mad mad
-     :cols cols
-     :rows rows
-     :data (into [] (map (constantly fill-value) data))}))
+  ([original-matrix]
+     (let [mad (:mad original-matrix)
+           cols (:cols original-matrix)
+           rows (:rows original-matrix)
+           data (:data original-matrix)]
+       {:mad mad
+        :cols cols
+        :rows rows
+        :data (into [] (map (fn [x] x) data))}))
+  ([original-matrix fill-value]
+     (let [mad (:mad original-matrix)
+           cols (:cols original-matrix)
+           rows (:rows original-matrix)
+           data (:data original-matrix)]
+       {:mad mad
+        :cols cols
+        :rows rows
+        :data (into [] (map (constantly fill-value) data))})))
 
 (defn map-matrix!
   "For corresponding values in tm and fm, apply map-function and store result in tm"

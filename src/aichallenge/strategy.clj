@@ -2,32 +2,33 @@
   (:use [aichallenge.matrix :as m])
   (:use [aichallenge.util :as u]))
 
-(defn init-strategy
+(defn- in-danger?
   [knowledge]
-  (let [default-cost 0]
-    (assoc knowledge :strategy-data {:cost-map (m/clone-matrix (:visit-data knowledge) default-cost)})))
+  false)
 
-(defn- need-to-explore?
+(defn- warrior-strategy
   [knowledge]
-  (let
-        [target-exploration 0.5
-         turn (:turn (:state knowledge))
-         data (:visit-data knowledge)
-         unknown (m/matrix-count data turn)
-         total (m/matrix-count data)]
-    ;(< (/ unknown total) target-exploration)
-    true))
+  (if (in-danger? knowledge)
+    knowledge ;protect hill
+    knowledge))
 
-(defn- explore-strategy
+(defn- gatherer-strategy
+  [knowledge]
+  (let [food (:food (:state knowledge))]
+    (if (empty? food)
+      knowledge
+      knowledge ;there is food, lets go and get it
+      )))
+
+(defn- explorer-strategy
   "Given the cost map, apply exploration adjustment"
   [knowledge]
-  (let
-      [m (:startegy-data knowledge)]
-    knowledge))
+  knowledge)
 
 (defn update-strategy
   [knowledge]
-  (if (need-to-explore? knowledge)
-    (explore-strategy knowledge)
-    knowledge))
+  (->
+   (warrior-strategy knowledge)
+   (gatherer-strategy)
+   (explorer-strategy)))
 
