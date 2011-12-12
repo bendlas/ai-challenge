@@ -9,14 +9,13 @@
         (wrap (- val lower)
               (- upper lower)))))
 
-
 (defn perr [& strs]
   (doseq [s (interpose \space strs)]
     (.print *err* s)))
 
 (defn perrln [& strs]
   (apply perr strs)
-  (perr \newline))
+  (.println *err*))
 
 (defn fpprint [filename data]
   (spit (java.io.File. filename)

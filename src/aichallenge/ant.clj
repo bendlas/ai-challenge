@@ -229,19 +229,15 @@ and dir is [:north :south :east :west]"
              initial-knowledge :initial-knowledge} (init-bot *game-info*)]
         (println "go") ;; we're "setup" so let's start
         (loop [cur (read-line)
-               state {}
-               bot-knowledge initial-knowledge]
+               bot-knowledge (assoc initial-knowledge :state {})]
           (cond
            (message? :end cur) (collect-stats)
            (message? :go cur) (let [{moves :moves
-                                     new-knowledge :knowledge} (bot {:state state
-                                                                 :knowledge bot-knowledge})]
+                                     new-knowledge :knowledge} (bot bot-knowledge)]
                                 (emit! moves)
                                 (println "go")
                                 (recur (read-line)
-                                       state
                                        new-knowledge))
            :else (recur (read-line)
-                        (update-state state cur)
-                        bot-knowledge)))))))
+                        (assoc bot-knowledge :state (update-state (:state bot-knowledge) cur)))))))))
 

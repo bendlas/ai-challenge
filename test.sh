@@ -16,4 +16,4 @@ tools/playgame.py \
   --capture_errors \
   --loadtime=10000 \
   -So | java -jar tools/visualizer.jar
-#  --nolaunch
+
