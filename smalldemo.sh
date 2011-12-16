@@ -9,7 +9,7 @@ tools/playgame.py \
 -e \
 --strict \
 --capture_errors \
---loadtime=5000 \
+--loadtime=3000 \
 --turntime=500 \
 "$@" "java -cp `lein classpath` clojure.main @MyBot.clj" "python tools/sample_bots/python/LeftyBot.py" \
 -So | java -jar tools/visualizer.jar
