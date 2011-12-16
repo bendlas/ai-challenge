@@ -1,6 +1,7 @@
 (ns aichallenge.ant
   "Library to interact with the game"
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [aichallenge.util :as u]))
 
 ;;****************************************************************
 ;; Constants and lookups
@@ -107,6 +108,7 @@
         rows (*game-info* :rows)
         cols (*game-info* :cols)
         [r c] (map + ant dir-vector)]
+    (u/perrln "Ant: " ant " Dir: " dir)
     [(cond 
        (< r 0) (+ rows r) 
        (>= r rows) (- r rows)

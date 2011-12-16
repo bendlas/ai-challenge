@@ -18,7 +18,6 @@
 (defn dir-for-ant
   [ant knowledge]
   (let [moves (:assigned-moves knowledge)]
-    ;(u/perrln (seq moves))
     (if (not (contains? moves ant))
       (first (filter #(ant/valid-move? (:state knowledge) ant %)
                      (shuffle [:north :east :west :south])))
