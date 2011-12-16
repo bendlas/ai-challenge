@@ -37,32 +37,43 @@
 (defn- update-knowledge-with-move
   [ant expanded knowledge]
   (let [desired-move (best-option expanded ant)
-        offset [(- (first ant) (first desired-move)) (- (last ant) (last desired-move))]]
+        offset [(- (first desired-move) (first ant)) (- (last desired-move) (last ant))]]
     (assign-move ant offset knowledge)))
 
-(defn- gatherer-strategy
-  [knowledge]
-  (let [food (:food (:state knowledge))
-        ants (:free-ants knowledge)
-        target (first ants)
-        water (:water (:state knowledge))
+(defn- get-route
+  [start target knowledge]
+  (let [water (:water (:state knowledge))
         vm (:visual-memory knowledge)
         acceptable? (fn [x] (and (not (contains? water x))
                                 (= (m/get-matrix vm (first x) (last x)) 0)))]
-    (if (or (empty? food) (nil? target))
+       (loop [options #{start} 
+              processed #{}
+              new-knowledge knowledge]
+         (if (empty? options)
+           new-knowledge
+           (let [cur (best-option options target)]
+             (if (= cur target)
+               (update-knowledge-with-move target processed new-knowledge)
+               (recur (filter #(not (= cur %1)) (into options (filter
+                                                               #(and (acceptable? %1) (not (contains? options %1)) (not (contains? processed %1)))
+                                                               (expand cur))))
+                      (conj processed cur)
+                      new-knowledge)))))))
+
+(defn- gatherer-strategy
+  [knowledge]
+  (loop [food (:food (:state knowledge))
+         ants (:free-ants knowledge)
+         knowledge knowledge]
+    (if (or (empty? food) (empty? ants))
       knowledge
-      (loop [options #{ (first food) } 
-             processed #{}
-             new-knowledge knowledge]
-        (if (empty? options)
-          new-knowledge ; this ant cannot get to this food
-          (let [cur (best-option options target)]
-            
-            (if (= cur target)
-              (update-knowledge-with-move target processed new-knowledge)
-              (recur (filter #(not (= cur %1)) (concat options (filter #(acceptable? %1) (expand cur))))
-                     (conj processed cur)
-                     new-knowledge))))))))
+      (let [target (first ants)
+            start (best-option food target)]
+        (recur (filter #(not (= start %1)) food)
+               (filter #(not (= target %1)) ants)
+               (if (or (nil? start) (nil? target))
+                 knowledge
+                 (get-route start target knowledge)))))))
 
 (defn- explorer-strategy
   "Given the cost map, apply exploration adjustment"

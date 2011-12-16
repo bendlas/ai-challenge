@@ -10,18 +10,19 @@
 (defn- move
   [offset]
   (cond
-   (= offset [1 0] :souht)
-   (= offset [0 1] :west)
-   (= offset [-1 0] :north)
-   (= offset [0 -1] :east)))
+   (= offset [1 0]) :souht
+   (= offset [0 -1]) :west
+   (= offset [-1 0]) :north
+   (= offset [0 1]) :east))
 
 (defn dir-for-ant
   [ant knowledge]
   (let [moves (:assigned-moves knowledge)]
-    (if (nil? (contains? moves ant))
+    ;(u/perrln (seq moves))
+    (if (not (contains? moves ant))
       (first (filter #(ant/valid-move? (:state knowledge) ant %)
                      (shuffle [:north :east :west :south])))
-      (u/perrln moves))))
+      (move (get moves ant)))))
 
 (defn moves-for-step
   "Based on current knowledge, return next move for every ant"
