@@ -108,7 +108,6 @@
         rows (*game-info* :rows)
         cols (*game-info* :cols)
         [r c] (map + ant dir-vector)]
-    (u/perrln "Ant: " ant " Dir: " dir)
     [(cond 
        (< r 0) (+ rows r) 
        (>= r rows) (- r rows)

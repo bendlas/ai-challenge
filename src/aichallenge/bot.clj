@@ -10,7 +10,7 @@
 (defn- move
   [offset]
   (cond
-   (= offset [1 0]) :souht
+   (= offset [1 0]) :south
    (= offset [0 -1]) :west
    (= offset [-1 0]) :north
    (= offset [0 1]) :east))
